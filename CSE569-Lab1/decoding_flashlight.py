@@ -162,22 +162,27 @@ def morse_to_plaintext(morse):
             - a plaintext sentence string
         Libraries you may need: N/A
     """
+    # Your code starts here:
     pt = ''
     cur = ''
-    # Your code starts here:
     for i in range(0,len(morse)):
         print('\ncur pt: ' + pt)
+        print('cur cur: ' + cur)
         print('morse: ' + morse[i])
-        if morse[i] == 0:
+        if morse[i] == '0':
             pt += morse_to_letter[cur] + ' '
             cur = ''
-        elif morse[i] == 1:
+        elif morse[i] == '1':
             pt += morse_to_letter[cur]
             cur = ''
-        elif morse[i] == 3:
+        elif morse[i] == '3':
             cur += '.'
-        elif morse[i] == 4:
+            if i == len(morse) - 1:
+                pt += morse_to_letter[cur]
+        elif morse[i] == '4':
             cur += '-'
+            if i == len(morse) - 1:
+                pt += morse_to_letter[cur]
     
     return pt
 
