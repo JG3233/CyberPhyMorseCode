@@ -166,9 +166,9 @@ def morse_to_plaintext(morse):
     pt = ''
     cur = ''
     for i in range(0,len(morse)):
-        print('\ncur pt: ' + pt)
-        print('cur cur: ' + cur)
-        print('morse: ' + morse[i])
+        # print('\ncur pt: ' + pt)
+        # print('cur cur: ' + cur)
+        # print('morse: ' + morse[i])
         if morse[i] == '0':
             pt += morse_to_letter[cur] + ' '
             cur = ''
