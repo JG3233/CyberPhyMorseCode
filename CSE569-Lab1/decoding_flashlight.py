@@ -88,12 +88,12 @@ def brightness_to_lengths(threshold, brightness_per_frame):
     # Your code starts here:
     for i in range(0, len(brightness_per_frame)):
         if brightness_per_frame[i] > threshold:
-            if i > 0 and len(sig_lens) > 0:
+            if i > 0 and sig_lens[len(sig_lens) - 1] > 0:
                 sig_lens[len(sig_lens) - 1] += 1
             else:
                 sig_lens.append(1)
         else:
-            if i > 0 and len(sig_lens) > 0:
+            if i > 0 and sig_lens[len(sig_lens) - 1] < 0:
                 sig_lens[len(sig_lens) - 1] -= 1
             else:
                 sig_lens.append(-1)
@@ -119,7 +119,21 @@ def classify_symbols(symbols):
             - A list of signal labels (Return Value)
         Libraries you may need: ckwrap.ckmeans
     """
+    sig_labs = []
     # Your code starts here:
+    for i in range(0, len(symbols)):
+        if symbols[i] < -60:
+            sig_labs.append('0')
+        elif symbols[i] < -40:
+            sig_labs.append('1')
+        elif symbols[i] < -10 and symbols[i] > -40:
+            sig_labs.append('2')
+        elif symbols[i] > 10 and symbols[i] < 40:
+            sig_labs.append('3')
+        elif symbols[i] > 40:
+            sig_labs.append('4')
+    
+    return sig_labs
 
 """
     Part 3. Convert Morse Code to Plaintext
@@ -148,7 +162,24 @@ def morse_to_plaintext(morse):
             - a plaintext sentence string
         Libraries you may need: N/A
     """
+    pt = ''
+    cur = ''
     # Your code starts here:
+    for i in range(0,len(morse)):
+        print('\ncur pt: ' + pt)
+        print('morse: ' + morse[i])
+        if morse[i] == 0:
+            pt += morse_to_letter[cur] + ' '
+            cur = ''
+        elif morse[i] == 1:
+            pt += morse_to_letter[cur]
+            cur = ''
+        elif morse[i] == 3:
+            cur += '.'
+        elif morse[i] == 4:
+            cur += '-'
+    
+    return pt
 
 """
     Part 4. Compile all above steps togther.
@@ -165,16 +196,20 @@ def run(input_dir):
         img_brightness = brightness(output_dir + '/frame' + str(i) + '.jpg')
         brightness_array[i] = img_brightness
 
-    print(" Checkpoint 1: brightness plot")
+    print("\nCheckpoint 1: brightness plot")
     plot_brightness(range(num_imgs), brightness_array)
     
     # Part 2
     # Your code starts here:
-    print("Checkpoint 2: a labeled list of signal lengths is ", brightness_to_lengths(100, brightness_array))
+    signal_lengths = brightness_to_lengths(100, brightness_array)
+    print("\nCheckpoint 2: a list of signal lengths is ", signal_lengths)
+    signal_labels = classify_symbols(signal_lengths)
+    print("A labeled list of signals is ", signal_labels)
 
-    # # Part 3
-    # plaintext = 'abracadabra' # Your code starts here:
-    # print("Checkpoint 3: The plaintext is ", )
-    # return plaintext
+    # Part 3
+    plaintext = morse_to_plaintext(signal_labels)
+    # Your code starts here:
+    print("\nCheckpoint 3: The plaintext is ", plaintext)
+    return plaintext
 
 run('inputs/encoded.mov')
