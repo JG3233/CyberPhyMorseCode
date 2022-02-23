@@ -104,7 +104,15 @@ def brightness_to_lengths(threshold, brightness_per_frame):
     
     return sig_lens
             
-def classify_symbols(symbols):
+def calculate_unit_length(sig_lens):
+    print('calculating unit length')
+    abs_sig_lens = []
+    for i in range(0, len(sig_lens)):
+        abs_sig_lens.append(abs(sig_lens[i]))
+
+    return max(set(abs_sig_lens), key=abs_sig_lens.count)
+
+def classify_symbols(symbols, unit_value):
     """
         Description: Due to the minor errors during the flashlight generating 
         and converting processes, the length of a symbol we calculate in 
@@ -120,15 +128,15 @@ def classify_symbols(symbols):
     # Your code starts here:
     sig_labs = []
     for i in range(0, len(symbols)):
-        if symbols[i] < -60:
+        if symbols[i] < -5 * unit_value: #-60:
             sig_labs.append('0')
-        elif symbols[i] < -40:
+        elif symbols[i] < -2 * unit_value: #-40:
             sig_labs.append('1')
-        elif symbols[i] < -10 and symbols[i] > -40:
+        elif symbols[i] < 0 and symbols[i] > -2 * unit_value: #-10 and symbols[i] > -40:
             sig_labs.append('2')
-        elif symbols[i] > 10 and symbols[i] < 40:
+        elif symbols[i] > 0 and symbols[i] < 2 * unit_value: #10 and symbols[i] < 40:
             sig_labs.append('3')
-        elif symbols[i] > 40:
+        elif symbols[i] > 2 * unit_value: #40:
             sig_labs.append('4')
     
     return sig_labs
@@ -203,7 +211,9 @@ def run(input_dir):
     # Your code starts here:
     signal_lengths = brightness_to_lengths(100, brightness_array)
     # print("\nCheckpoint 2: a list of signal lengths is ", signal_lengths)
-    signal_labels = classify_symbols(signal_lengths)
+    unit_value = calculate_unit_length(signal_lengths)
+    print('unit length: ' + str(unit_value))
+    signal_labels = classify_symbols(signal_lengths, unit_value)
     # print("A labeled list of signals is ", signal_labels)
 
     # Part 3
