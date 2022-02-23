@@ -11,21 +11,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image, ImageStat
 
-""" 
+"""
     Part 1. Identify Physical Signals.
 """
 
 def video_to_images(input_video_path, output_folder_dir):
     """
-        Description: Convert input video to images of each frame and calculate 
+        Description: Convert input video to images of each frame and calculate
                      the total number of frames in the input video.
-        Input: 
+        Input:
             - input_video_path: path of input video.
             - output_folder_path: the path of the folder that stores image of each frame.
-        Output: 
+        Output:
             - Number of frames the input video generated (Return Value).
             - A folder that contains all frame images of the input video.
-        Libraries you may need: 
+        Libraries you may need:
             - cv2.VideoCapture()
             - os
     """
@@ -43,12 +43,12 @@ def video_to_images(input_video_path, output_folder_dir):
 
 def brightness(im_file):
     """
-        Description: Calculate the brightness of input image. 
-        Input: 
+        Description: Calculate the brightness of input image.
+        Input:
             - im_file: path of the image.
-        Output(Return Value): 
+        Output(Return Value):
             - Return the brightness of input image.
-        Libraries you may need: 
+        Libraries you may need:
             - Image
             - ImageStat
     """
@@ -56,8 +56,23 @@ def brightness(im_file):
     with Image.open(im_file) as im:
         bright_list = ImageStat.Stat(im).mean
         avg_img_bright = sum(bright_list) / len(bright_list)
-    
+
     return avg_img_bright
+
+def get_brightness_threshold(brightness_array):
+    window_size = 10
+    max_window_brightness = 0
+    min_window_brightness = 255
+    for i in range(len(brightness_array) - window_size):
+        window = brightness_array[i:i+window_size]
+        window_avg = sum(window) / window_size
+        if window_avg > max_window_brightness:
+            max_window_brightness = window_avg
+        if window_avg < min_window_brightness:
+            min_window_brightness = window_avg
+    threshold = (max_window_brightness + min_window_brightness) / 2
+    print("THRESHOLD: ", threshold)
+    return threshold
 
 def plot_brightness(x, y):
     """ Plot the brightness of each frame. """
@@ -68,17 +83,17 @@ def plot_brightness(x, y):
     plt.plot(x, y)
     plt.show()
 
-""" 
+"""
     Part 2. Convert Physical Signals to Digital Signals.
 """
 
 def brightness_to_lengths(threshold, brightness_per_frame):
     """
         Description: Calculate lengths of consistent signals.
-        Input: 
+        Input:
             - threshold: a value of brightness that distinguishes light frames from dark ones.
             - brightness_per_frame: a list of brightness values of all frames.
-        Output: 
+        Output:
             - A list of signal lengths (Return Value)
         Libraries you may need: N/A
     """
@@ -95,13 +110,13 @@ def brightness_to_lengths(threshold, brightness_per_frame):
                 sig_lens[len(sig_lens) - 1] -= 1
             else:
                 sig_lens.append(-1)
-    
+
     if sig_lens[0] < 0:
         sig_lens = sig_lens[1:]
-    
+
     if sig_lens[len(sig_lens) - 1] < 0:
         sig_lens = sig_lens[:-1]
-    
+
     return sig_lens
             
 def calculate_unit_length(sig_lens):
@@ -114,14 +129,14 @@ def calculate_unit_length(sig_lens):
 
 def classify_symbols(symbols, unit_value):
     """
-        Description: Due to the minor errors during the flashlight generating 
-        and converting processes, the length of a symbol we calculate in 
-        the last step is more likely to be a range than a certain value. 
-        Implement the classify_symbols(symbols) function that labels 
+        Description: Due to the minor errors during the flashlight generating
+        and converting processes, the length of a symbol we calculate in
+        the last step is more likely to be a range than a certain value.
+        Implement the classify_symbols(symbols) function that labels
         each length to a Morse symbol.
-        Input: 
+        Input:
             - symbols: a list of signal lengths
-        Output: 
+        Output:
             - A list of signal labels (Return Value)
         Libraries you may need: ckwrap.ckmeans
     """
@@ -138,7 +153,7 @@ def classify_symbols(symbols, unit_value):
             sig_labs.append('3')
         elif symbols[i] > 2 * unit_value: #40:
             sig_labs.append('4')
-    
+
     return sig_labs
 
 """
@@ -147,7 +162,7 @@ def classify_symbols(symbols, unit_value):
 
 morse_to_letter = {'.-':'A', '-...':'B', '-.-.':'C', '-..':'D', '.': 'E', '..-.':'F', '--.':'G',
                    '....':'H', '..':'I', '.---':'J', '-.-':'K', '.-..':'L', '--':'M', '-.':'N',
-                   '---':'O', '.--.':'P', '--.-':'Q', '.-.':'R', '...':'S', '-':'T', 
+                   '---':'O', '.--.':'P', '--.-':'Q', '.-.':'R', '...':'S', '-':'T',
                    '..-':'U', '...-':'V', '.--':'W', '-..-':'X', '-.--':'Y', '--..':'Z',
                    '.-.-.-':'.', '--..--':',', '-.-.--':'!', '..--..':'?', '-..-.':'/', '.--.-.':'@', '.----.':'\'',
                    '.----':'1', '..---':'2', '...--':'3', '....-':'4', '.....':'5',
@@ -156,15 +171,15 @@ morse_to_letter = {'.-':'A', '-...':'B', '-.-.':'C', '-..':'D', '.': 'E', '..-.'
 def morse_to_plaintext(morse):
     """
         Description: Convert Morse code to plaintext
-        Input: 
+        Input:
             - morse: a list of labels, each label is a number that represents a kind of Morse Code.
-              e.g. [3,2,3,1,4,2,3], where 
+              e.g. [3,2,3,1,4,2,3], where
               0: space_between_words
               1: space_between_letters
               2: space_in_letter
               3: dot
               4: dash
-        Output(Return Value): 
+        Output(Return Value):
             - a plaintext sentence string
         Libraries you may need: N/A
     """
@@ -186,7 +201,7 @@ def morse_to_plaintext(morse):
             cur += '-'
             if i == len(morse) - 1:
                 pt += morse_to_letter[cur]
-    
+
     return pt
 
 """
@@ -204,17 +219,20 @@ def run(input_dir):
         img_brightness = brightness(output_dir + '/frame' + str(i) + '.jpg')
         brightness_array[i] = img_brightness
 
+    # print("\nBrightness array: ")
+    # print(brightness_array)
     # print("\nCheckpoint 1: brightness plot")
     # plot_brightness(range(num_imgs), brightness_array)
-    
+
+
     # Part 2
     # Your code starts here:
-    signal_lengths = brightness_to_lengths(100, brightness_array)
-    # print("\nCheckpoint 2: a list of signal lengths is ", signal_lengths)
+    threshold = get_brightness_threshold(brightness_array)
+    signal_lengths = brightness_to_lengths(threshold, brightness_array)
+    print("\nCheckpoint 2: a list of signal lengths is ", signal_lengths)
     unit_value = calculate_unit_length(signal_lengths)
-    print('unit length: ' + str(unit_value))
     signal_labels = classify_symbols(signal_lengths, unit_value)
-    # print("A labeled list of signals is ", signal_labels)
+    print("A labeled list of signals is ", signal_labels)
 
     # Part 3
     # Your code starts here:

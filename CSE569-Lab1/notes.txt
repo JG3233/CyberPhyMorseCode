@@ -1,0 +1,10 @@
+auto brightness threshhold
+	rolling average
+
+camera focus should be mentioned
+
+auto lendgth of dot 
+
+do our own video
+
+limitations 
