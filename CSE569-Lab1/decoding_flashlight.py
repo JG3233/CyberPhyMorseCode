@@ -4,7 +4,6 @@
 ### pip3 install ckwrap
 ### pip3 install bcrypt
 
-from matplotlib.cbook import pts_to_midstep
 import cv2
 import os
 import ckwrap
@@ -58,7 +57,6 @@ def brightness(im_file):
         bright_list = ImageStat.Stat(im).mean
         avg_img_bright = sum(bright_list) / len(bright_list)
     
-    # print(img_bright)
     return avg_img_bright
 
 def plot_brightness(x, y):
@@ -84,8 +82,8 @@ def brightness_to_lengths(threshold, brightness_per_frame):
             - A list of signal lengths (Return Value)
         Libraries you may need: N/A
     """
-    sig_lens = []
     # Your code starts here:
+    sig_lens = []
     for i in range(0, len(brightness_per_frame)):
         if brightness_per_frame[i] > threshold:
             if i > 0 and sig_lens[len(sig_lens) - 1] > 0:
@@ -119,8 +117,8 @@ def classify_symbols(symbols):
             - A list of signal labels (Return Value)
         Libraries you may need: ckwrap.ckmeans
     """
-    sig_labs = []
     # Your code starts here:
+    sig_labs = []
     for i in range(0, len(symbols)):
         if symbols[i] < -60:
             sig_labs.append('0')
@@ -166,9 +164,6 @@ def morse_to_plaintext(morse):
     pt = ''
     cur = ''
     for i in range(0,len(morse)):
-        # print('\ncur pt: ' + pt)
-        # print('cur cur: ' + cur)
-        # print('morse: ' + morse[i])
         if morse[i] == '0':
             pt += morse_to_letter[cur] + ' '
             cur = ''
@@ -195,25 +190,25 @@ def run(input_dir):
     output_dir = 'outputs/'+output_name+'_output'
     # Your code starts here:
     # num_imgs = video_to_images(input_dir, output_dir)
-    num_imgs = 3182 # temp to not recalc images
+    num_imgs = 3182 # temp to not recalc images ^
     brightness_array = [None] * num_imgs
     for i in range(0,num_imgs):
         img_brightness = brightness(output_dir + '/frame' + str(i) + '.jpg')
         brightness_array[i] = img_brightness
 
-    print("\nCheckpoint 1: brightness plot")
-    plot_brightness(range(num_imgs), brightness_array)
+    # print("\nCheckpoint 1: brightness plot")
+    # plot_brightness(range(num_imgs), brightness_array)
     
     # Part 2
     # Your code starts here:
     signal_lengths = brightness_to_lengths(100, brightness_array)
-    print("\nCheckpoint 2: a list of signal lengths is ", signal_lengths)
+    # print("\nCheckpoint 2: a list of signal lengths is ", signal_lengths)
     signal_labels = classify_symbols(signal_lengths)
-    print("A labeled list of signals is ", signal_labels)
+    # print("A labeled list of signals is ", signal_labels)
 
     # Part 3
-    plaintext = morse_to_plaintext(signal_labels)
     # Your code starts here:
+    plaintext = morse_to_plaintext(signal_labels)
     print("\nCheckpoint 3: The plaintext is ", plaintext)
     return plaintext
 
