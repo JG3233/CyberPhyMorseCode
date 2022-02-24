@@ -4,6 +4,7 @@
 ### pip3 install ckwrap
 ### pip3 install bcrypt
 
+from re import T
 import cv2
 import os
 import ckwrap
@@ -72,7 +73,6 @@ def get_brightness_threshold(brightness_array):
         if window_avg < min_window_brightness:
             min_window_brightness = window_avg
     threshold = (max_window_brightness + min_window_brightness) / 2
-    print("THRESHOLD: ", threshold)
     return threshold
 
 def plot_brightness(x, y):
@@ -119,8 +119,16 @@ def brightness_to_lengths(threshold, brightness_per_frame):
         sig_lens = sig_lens[:-1]
 
     return sig_lens
+            
+def calculate_unit_length(sig_lens):
+    print('calculating unit length')
+    abs_sig_lens = []
+    for i in range(0, len(sig_lens)):
+        abs_sig_lens.append(abs(sig_lens[i]))
 
-def classify_symbols(symbols):
+    return max(set(abs_sig_lens), key=abs_sig_lens.count)
+
+def classify_symbols(symbols, unit_value):
     """
         Description: Due to the minor errors during the flashlight generating
         and converting processes, the length of a symbol we calculate in
@@ -136,15 +144,15 @@ def classify_symbols(symbols):
     # Your code starts here:
     sig_labs = []
     for i in range(0, len(symbols)):
-        if symbols[i] < -60:
+        if symbols[i] < -5 * unit_value: #-60:
             sig_labs.append('0')
-        elif symbols[i] < -40:
+        elif symbols[i] < -2 * unit_value: #-40:
             sig_labs.append('1')
-        elif symbols[i] < -10 and symbols[i] > -40:
+        elif symbols[i] < 0 and symbols[i] > -2 * unit_value: #-10 and symbols[i] > -40:
             sig_labs.append('2')
-        elif symbols[i] > 10 and symbols[i] < 40:
+        elif symbols[i] > 0 and symbols[i] < 2 * unit_value: #10 and symbols[i] < 40:
             sig_labs.append('3')
-        elif symbols[i] > 40:
+        elif symbols[i] > 2 * unit_value: #40:
             sig_labs.append('4')
 
     return sig_labs
@@ -179,21 +187,30 @@ def morse_to_plaintext(morse):
     # Your code starts here:
     pt = ''
     cur = ''
+    err_flag = False
     for i in range(0,len(morse)):
-        if morse[i] == '0':
-            pt += morse_to_letter[cur] + ' '
-            cur = ''
-        elif morse[i] == '1':
-            pt += morse_to_letter[cur]
-            cur = ''
-        elif morse[i] == '3':
-            cur += '.'
-            if i == len(morse) - 1:
+        try:
+            if morse[i] == '0' and not err_flag:
+                pt += morse_to_letter[cur] + ' '
+                cur = ''
+            elif morse[i] == '1':
                 pt += morse_to_letter[cur]
-        elif morse[i] == '4':
-            cur += '-'
-            if i == len(morse) - 1:
-                pt += morse_to_letter[cur]
+                cur = ''
+                err_flag = False
+            elif morse[i] == '3'and not err_flag:
+                cur += '.'
+                if i == len(morse) - 1:
+                    pt += morse_to_letter[cur]
+            elif morse[i] == '4'and not err_flag:
+                cur += '-'
+                if i == len(morse) - 1:
+                    pt += morse_to_letter[cur]
+        except:
+            err_flag = True
+            pt += '[-]'
+        
+        print('current plaintext:' + pt)
+        print('current letter: ' + cur)
 
     return pt
 
@@ -205,31 +222,37 @@ def run(input_dir):
     output_name = input_dir.split('.')[0].split('/')[1]
     output_dir = 'outputs/'+output_name+'_output'
     # Your code starts here:
-    # num_imgs = video_to_images(input_dir, output_dir)
-    num_imgs = 3182 # temp to not recalc images ^
+    num_imgs = video_to_images(input_dir, output_dir)
+    # num_imgs = 1471 # temp to not recalc images ^
     brightness_array = [None] * num_imgs
     for i in range(0,num_imgs):
         img_brightness = brightness(output_dir + '/frame' + str(i) + '.jpg')
         brightness_array[i] = img_brightness
 
-    # print("\nBrightness array: ")
-    # print(brightness_array)
-    # print("\nCheckpoint 1: brightness plot")
-    # plot_brightness(range(num_imgs), brightness_array)
-
-
     # Part 2
     # Your code starts here:
     threshold = get_brightness_threshold(brightness_array)
+    print('Threshold: ' + str(threshold))
     signal_lengths = brightness_to_lengths(threshold, brightness_array)
     print("\nCheckpoint 2: a list of signal lengths is ", signal_lengths)
-    signal_labels = classify_symbols(signal_lengths)
+    unit_value = calculate_unit_length(signal_lengths)
+    print('Unit value: ' + str(unit_value))
+    signal_labels = classify_symbols(signal_lengths, unit_value)
     print("A labeled list of signals is ", signal_labels)
 
     # Part 3
     # Your code starts here:
-    plaintext = morse_to_plaintext(signal_labels)
-    print("\nCheckpoint 3: The plaintext is ", plaintext)
+    try:
+        plaintext = morse_to_plaintext(signal_labels)
+        print("\nCheckpoint 3: The plaintext is ", plaintext)
+    except:
+        plaintext = "ERROR"
+
+    print("\nBrightness array: ")
+    print(brightness_array)
+    print("\nCheckpoint 1: brightness plot")
+    plot_brightness(range(num_imgs), brightness_array)
+
     return plaintext
 
-run('inputs/encoded.mov')
+run('inputs/outside_zoomed_dark_close.mp4')
