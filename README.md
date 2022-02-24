@@ -75,13 +75,13 @@ Notably, our implementation was successful on the following variations:
 From these successes and failures we could deduce a number of important factors and variables in producing a useful cyber-physical channel using this technique, mentioned in more detail in the next section.
 
 ## Conclusion and Future Direction
-
-### Environmental Factors
+### Limitiations
+#### Environmental Factors
 The two main physical factors we explored were the physical distance between the light source and the camera and the amount of ambient light. The further the camera was from the light source, the less the effect of the light on average brightness of the frame was. This is due to the percentage of the frame that the light fills; a higher number of brightened pixels would increase the overall brightness of the frame. This is illustrated by our "inside zoomed" example video decoding correctly while our indoor unzoomed video did not.
 
 Another effect of the distance is the increased effect of camera wobble on the result of the decoding. When the camera is zoomed, small changes in the camera angle due to the smartphone being held in a human hand were amplified. These small movements caused what was in the frame to change, for example, showing more or less of a brick wall. The changes in the overall brightness of the frame due to this were more significant than those caused by the light, and so the video was unable to be correctly decoded. This can be seen in the "outside zoomed close" example. The peaks and valleys of the graph vary significantly, and these correspond to the wobble in the camera showing more or less of differently colored objects that affected the brightness more than the state of the light. This problem can be mitigated by the use of a tripod or some other stabilizer.
 
 Lastly, the amount of ambient light is a major environmental factor. In situations where factors such as the distance or camera wobble made a message indecipherable in the light, it was able to be decoded in the dark under the same conditions. This is the case for unzoomed video indoors and all of our outdoor videos. In the dark, a smaller light source has more of an effect on the frame as it appears larger due to lens flare. It also shines on the objects around it, and their brightness is affected more than it would be during the day. Lastly, the adverse effects of camera wobble are diminished as the brightness variation of materials entering and leaving the frame is smaller. For example, bricks and wood appear to be a more similar color in the dark, so more of one or the other in the frame will affect the brightness less. 
 
-###  Limitations
+####  Limitations
 Our covert channel is limited by the equipment available and certain environmental factors.
