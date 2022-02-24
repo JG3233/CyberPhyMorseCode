@@ -76,6 +76,7 @@ From these successes and failures we could deduce a number of important factors 
 
 ## Conclusion and Future Direction
 
+### Environmental Factors
 The two main physical factors we explored were the physical distance between the light source and the camera and the amount of ambient light. The further the camera was from the light source, the less the effect of the light on average brightness of the frame was. This is due to the percentage of the frame that the light fills; a higher number of brightened pixels would increase the overall brightness of the frame. This is illustrated by our "inside zoomed" example video decoding correctly while our indoor unzoomed video did not.
 
 Another effect of the distance is the increased effect of camera wobble on the result of the decoding. When the camera is zoomed, small changes in the camera angle due to the smartphone being held in a human hand were amplified. These small movements caused what was in the frame to change, for example, showing more or less of a brick wall. The changes in the overall brightness of the frame due to this were more significant than those caused by the light, and so the video was unable to be correctly decoded. This can be seen in the "outside zoomed close" example. The peaks and valleys of the graph vary significantly, and these correspond to the wobble in the camera showing more or less of differently colored objects that affected the brightness more than the state of the light. This problem can be mitigated by the use of a tripod or some other stabilizer.
