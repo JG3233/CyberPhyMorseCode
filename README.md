@@ -42,9 +42,9 @@ Since we decided to pursue the Morse code cyber-physical channel, there were ske
 
 ### Parse Symbols and Convert from Morse Code to Plaintext
 
->Now that we have all of our Morse symbols, we simply need to collect dots and dashes until there is a space between words (or the message ends), effectively ignoring spaces between parts of the same letter. Once on of these occurs, we can convert the dots and dashes to a letter with the morse_to_letter dictionary. Next, we add the letter to the plaintext and reset the dots and dashes of the current letter to empty. 
+>Now that we have all of our Morse symbols, we simply need to collect dots and dashes until there is a space between words (or the message ends), effectively ignoring spaces between parts of the same letter. Once one of these occurs, we can convert the dots and dashes to a letter with the morse_to_letter dictionary. Next, we add the letter to the plaintext and reset the dots and dashes of the current letter to empty. 
 
->Running through the list of symbols, we can produce a plaintext message that decodes the Morse code in the original video! We also recognized that any incorrectly determined letters would break the decoder. We also discuss this in the next section, but we introduced some robustness by detecting incorrect calls to the dictionary and indicating a wrong character and setting a flag that would wait until the next space character to continue decoding.
+>Running through the list of symbols, we can produce a plaintext message that decodes the Morse code in the original video! We also recognized that any incorrectly determined letters would break the decoder. We discuss this in the next section, but we introduced some robustness by detecting incorrect calls to the dictionary, indicating a wrong character with '[-]', and setting a flag that would wait until the next space character to continue attempting to decode.
 
 ### Experiment
 
@@ -61,9 +61,11 @@ Tests:
 - outside zoomed dark: I'm in     
 - outside zoomed dark close: I'm in   
 
-Following the original video, we also tested using a video taken from across a room, zoomed in on the flashlight (zoomed). Next, we did the same without using the zoom feature on the smartphone (unzoomed). We also introduced other variations like turning off the lights inside (dark) and taking the video from outside (outside) on the sidewalk (close) and across the street.
+Following the original video, we also tested using a video taken from across a room, zoomed in on the flashlight (zoomed). Next, we did the same without using the zoom feature on the smartphone (unzoomed). We also introduced other variations like turning off the lights inside (dark),taking the video from outside (outside), both on the sidewalk (close) and across the street.
 
-Notably, the implementation was successful on the following variations: 
+These strategies help delineate important factors. One of the most telling is how much of the frame the flashlight fills, indicated by whether or not zoom is used and by the distance the video is taken from. Another important factor is the light in the environment, both within the building and outside. We took a number of videos combining these variables in order to better understand the efficacy of our implementation.
+
+Notably, our implementation was successful on the following variations: 
 - encoded (original): welcome to lab1!   
 - zoomed: J@C0B AND B3N   
 - dark: CSE569!   
