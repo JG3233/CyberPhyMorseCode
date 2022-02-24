@@ -42,6 +42,7 @@ def video_to_images(input_video_path, output_folder_dir):
     return frames
 
 def brightness(im_file):
+
     """
         Description: Calculate the brightness of input image.
         Input:
