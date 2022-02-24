@@ -4,7 +4,6 @@
 ### pip3 install ckwrap
 ### pip3 install bcrypt
 
-from re import T
 import cv2
 import os
 import ckwrap
@@ -120,7 +119,6 @@ def brightness_to_lengths(threshold, brightness_per_frame):
     return sig_lens
             
 def calculate_unit_length(sig_lens):
-    print('calculating unit length')
     abs_sig_lens = []
     for i in range(0, len(sig_lens)):
         abs_sig_lens.append(abs(sig_lens[i]))
@@ -208,8 +206,8 @@ def morse_to_plaintext(morse):
             err_flag = True
             pt += '[-]'
         
-        print('current plaintext:' + pt)
-        print('current letter: ' + cur)
+        # print('current plaintext:' + pt)
+        # print('current letter: ' + cur)
 
     return pt
 
@@ -221,8 +219,8 @@ def run(input_dir):
     output_name = input_dir.split('.')[0].split('/')[1]
     output_dir = 'outputs/'+output_name+'_output'
     # Your code starts here:
-    num_imgs = video_to_images(input_dir, output_dir)
-    # num_imgs = 1471 # temp to not recalc images ^
+    # num_imgs = video_to_images(input_dir, output_dir)
+    num_imgs = 749 # temp to not recalc images ^
     brightness_array = [None] * num_imgs
     for i in range(0,num_imgs):
         img_brightness = brightness(output_dir + '/frame' + str(i) + '.jpg')
@@ -233,11 +231,11 @@ def run(input_dir):
     threshold = get_brightness_threshold(brightness_array)
     print('Threshold: ' + str(threshold))
     signal_lengths = brightness_to_lengths(threshold, brightness_array)
-    print("\nCheckpoint 2: a list of signal lengths is ", signal_lengths)
+    # print("\nCheckpoint 2: a list of signal lengths is ", signal_lengths)
     unit_value = calculate_unit_length(signal_lengths)
     print('Unit value: ' + str(unit_value))
     signal_labels = classify_symbols(signal_lengths, unit_value)
-    print("A labeled list of signals is ", signal_labels)
+    # print("A labeled list of signals is ", signal_labels)
 
     # Part 3
     # Your code starts here:
@@ -247,8 +245,8 @@ def run(input_dir):
     except:
         plaintext = "ERROR"
 
-    print("\nBrightness array: ")
-    print(brightness_array)
+    # print("\nBrightness array: ")
+    # print(brightness_array)
     print("\nCheckpoint 1: brightness plot")
     plot_brightness(range(num_imgs), brightness_array)
 
