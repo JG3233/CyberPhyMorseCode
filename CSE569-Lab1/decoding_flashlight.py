@@ -4,6 +4,7 @@
 ### pip3 install ckwrap
 ### pip3 install bcrypt
 
+from re import T
 import cv2
 import os
 import ckwrap
@@ -185,21 +186,27 @@ def morse_to_plaintext(morse):
     # Your code starts here:
     pt = ''
     cur = ''
+    err_flag = False
     for i in range(0,len(morse)):
-        if morse[i] == '0':
-            pt += morse_to_letter[cur] + ' '
-            cur = ''
-        elif morse[i] == '1':
-            pt += morse_to_letter[cur]
-            cur = ''
-        elif morse[i] == '3':
-            cur += '.'
-            if i == len(morse) - 1:
+        try:
+            if morse[i] == '0' and not err_flag:
+                pt += morse_to_letter[cur] + ' '
+                cur = ''
+            elif morse[i] == '1':
                 pt += morse_to_letter[cur]
-        elif morse[i] == '4':
-            cur += '-'
-            if i == len(morse) - 1:
-                pt += morse_to_letter[cur]
+                cur = ''
+                err_flag = False
+            elif morse[i] == '3'and not err_flag:
+                cur += '.'
+                if i == len(morse) - 1:
+                    pt += morse_to_letter[cur]
+            elif morse[i] == '4'and not err_flag:
+                cur += '-'
+                if i == len(morse) - 1:
+                    pt += morse_to_letter[cur]
+        except:
+            err_flag = True
+            pt += '[-]'
         
         print('current plaintext:' + pt)
         print('current letter: ' + cur)
@@ -214,8 +221,8 @@ def run(input_dir):
     output_name = input_dir.split('.')[0].split('/')[1]
     output_dir = 'outputs/'+output_name+'_output'
     # Your code starts here:
-    # num_imgs = video_to_images(input_dir, output_dir)
-    num_imgs = 870 # temp to not recalc images ^
+    num_imgs = video_to_images(input_dir, output_dir)
+    # num_imgs = 1471 # temp to not recalc images ^
     brightness_array = [None] * num_imgs
     for i in range(0,num_imgs):
         img_brightness = brightness(output_dir + '/frame' + str(i) + '.jpg')
@@ -234,8 +241,11 @@ def run(input_dir):
 
     # Part 3
     # Your code starts here:
-    plaintext = morse_to_plaintext(signal_labels)
-    print("\nCheckpoint 3: The plaintext is ", plaintext)
+    try:
+        plaintext = morse_to_plaintext(signal_labels)
+        print("\nCheckpoint 3: The plaintext is ", plaintext)
+    except:
+        plaintext = "ERROR"
 
     print("\nBrightness array: ")
     print(brightness_array)
@@ -244,4 +254,4 @@ def run(input_dir):
 
     return plaintext
 
-run('inputs/dark.mp4')
+run('inputs/outside_zoomed_dark_close.mp4')
