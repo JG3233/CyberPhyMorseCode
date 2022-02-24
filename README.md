@@ -8,8 +8,8 @@ The goal of this covert channel is to exfiltrate messages from a building using 
 
 ## Implementation and Experiment
 
-*in progress
+*in progress*
 
 ## Conclusion and Future Direction
 
-*in progress
+*in progress*
