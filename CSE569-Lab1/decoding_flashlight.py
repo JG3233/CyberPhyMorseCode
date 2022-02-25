@@ -221,7 +221,7 @@ def run(input_dir):
     output_dir = 'outputs/'+output_name+'_output'
     # Your code starts here:
     # num_imgs = video_to_images(input_dir, output_dir)
-    num_imgs = 749 # temp to not recalc images ^
+    num_imgs = 780 # temp to not recalc images ^
     brightness_array = [None] * num_imgs
     for i in range(0,num_imgs):
         img_brightness = brightness(output_dir + '/frame' + str(i) + '.jpg')
@@ -253,4 +253,4 @@ def run(input_dir):
 
     return plaintext
 
-run('inputs/outside_zoomed_dark_close.mp4')
+run('inputs/unzoomed.mp4')
