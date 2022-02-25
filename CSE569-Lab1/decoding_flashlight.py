@@ -32,7 +32,8 @@ def video_to_images(input_video_path, output_folder_dir):
     # Your code starts here:
     video = cv2.VideoCapture(input_video_path)
     res, img = video.read()
-    os.mkdir(output_folder_dir)
+    if not os.path.isdir(output_folder_dir):
+        os.mkdir(output_folder_dir)
     frames = 0
     while res:
         cv2.imwrite(output_folder_dir + '/frame' + str(frames) + '.jpg', img)
@@ -142,15 +143,15 @@ def classify_symbols(symbols, unit_value):
     # Your code starts here:
     sig_labs = []
     for i in range(0, len(symbols)):
-        if symbols[i] < -5 * unit_value: #-60:
+        if symbols[i] < -5 * unit_value:
             sig_labs.append('0')
-        elif symbols[i] < -2 * unit_value: #-40:
+        elif symbols[i] < -2 * unit_value:
             sig_labs.append('1')
-        elif symbols[i] < 0 and symbols[i] > -2 * unit_value: #-10 and symbols[i] > -40:
+        elif symbols[i] < 0 and symbols[i] > -2 * unit_value:
             sig_labs.append('2')
-        elif symbols[i] > 0 and symbols[i] < 2 * unit_value: #10 and symbols[i] < 40:
+        elif symbols[i] > 0 and symbols[i] < 2 * unit_value:
             sig_labs.append('3')
-        elif symbols[i] > 2 * unit_value: #40:
+        elif symbols[i] > 2 * unit_value:
             sig_labs.append('4')
 
     return sig_labs
@@ -206,9 +207,6 @@ def morse_to_plaintext(morse):
         except:
             err_flag = True
             pt += '[-]'
-        
-        # print('current plaintext:' + pt)
-        # print('current letter: ' + cur)
 
     return pt
 
@@ -219,9 +217,9 @@ def run(input_dir):
     # Part 1
     output_name = input_dir.split('.')[0].split('/')[1]
     output_dir = 'outputs/'+output_name+'_output'
+
     # Your code starts here:
-    # num_imgs = video_to_images(input_dir, output_dir)
-    num_imgs = 780 # temp to not recalc images ^
+    num_imgs = video_to_images(input_dir, output_dir)
     brightness_array = [None] * num_imgs
     for i in range(0,num_imgs):
         img_brightness = brightness(output_dir + '/frame' + str(i) + '.jpg')
@@ -232,25 +230,20 @@ def run(input_dir):
     threshold = get_brightness_threshold(brightness_array)
     print('Threshold: ' + str(threshold))
     signal_lengths = brightness_to_lengths(threshold, brightness_array)
-    # print("\nCheckpoint 2: a list of signal lengths is ", signal_lengths)
     unit_value = calculate_unit_length(signal_lengths)
     print('Unit value: ' + str(unit_value))
     signal_labels = classify_symbols(signal_lengths, unit_value)
-    # print("A labeled list of signals is ", signal_labels)
 
     # Part 3
     # Your code starts here:
     try:
         plaintext = morse_to_plaintext(signal_labels)
-        print("\nCheckpoint 3: The plaintext is ", plaintext)
+        print("\nThe plaintext is ", plaintext)
     except:
         plaintext = "ERROR"
 
-    # print("\nBrightness array: ")
-    # print(brightness_array)
-    print("\nCheckpoint 1: brightness plot")
-    plot_brightness(range(num_imgs), brightness_array)
+    # plot_brightness(range(num_imgs), brightness_array)
 
     return plaintext
 
-run('inputs/unzoomed.mp4')
+run('inputs/encoded.mov')
